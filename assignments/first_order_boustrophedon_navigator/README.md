@@ -3,7 +3,7 @@
 
 This assignments goal was to obtain the optimal PID values for the Boustrophedon navigator also known as the lawnmower pattern in turtle sim acquiring the correct kp and kd values for linear and angular motion. the assignment encompassed obtaining the correct motion, pattern and efficiency in coverage of space 
 and the cross track error which shows how much the path deviates from the actual path its supposed to take
-
+![My result](Lawnmower pattern Thaarun.png)
 ## Tuning Methodology and Results
 
 the tuning methodology used was a heuristic approach of trial and error. by setting the Kp_linear and Kp_angular values to the extreme to see how it affects the system. this allows us to learn the behaviour of the robot and how it affects the pattern in the end.and from the above experiment its showed that
