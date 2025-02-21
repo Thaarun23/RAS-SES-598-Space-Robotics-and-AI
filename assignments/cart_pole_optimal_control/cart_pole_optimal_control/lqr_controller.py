@@ -12,6 +12,8 @@ class CartPoleLQRController(Node):
         super().__init__('cart_pole_lqr_controller')
         
         # System parameters
+        self.angle_all=[]
+        self.pos_all = []
         self.M = 1.0  # Mass of cart (kg)
         self.m = 1.0  # Mass of pole (kg)
         self.L = 1.0  # Length of pole (m)
@@ -33,13 +35,14 @@ class CartPoleLQRController(Node):
         ])
         
         # LQR cost matrices
-        self.Q = np.diag([1.0, 1.0, 10.0, 10.0])  # State cost
-        self.R = np.array([[0.1]])  # Control cost
+        self.Q = np.diag([10.0, 1.0, 10.0, 1.0])  # State cost
+        self.R = np.array([[0.01]])  # Control cost
         
         # Compute LQR gain matrix
         self.K = self.compute_lqr_gain()
         self.get_logger().info(f'LQR Gain Matrix: {self.K}')
-        
+        self.max_angle = 0.0
+        self.max_dev = 0.0
         # Initialize state estimate
         self.x = np.zeros((4, 1))
         self.state_initialized = False
@@ -89,7 +92,10 @@ class CartPoleLQRController(Node):
                 [msg.position[pole_idx]],     # Pole angle (θ)
                 [msg.velocity[pole_idx]]      # Pole angular velocity (θ̇)
             ])
-            
+            self.angle_all.append(msg.position[pole_idx])
+            self.pos_all.append(msg.position[cart_idx])
+            self.max_angle =max(self.angle_all)
+            self.max_dev = max(self.pos_all)
             if not self.state_initialized:
                 self.get_logger().info(f'Initial state: cart_pos={msg.position[cart_idx]:.3f}, cart_vel={msg.velocity[cart_idx]:.3f}, pole_angle={msg.position[pole_idx]:.3f}, pole_vel={msg.velocity[pole_idx]:.3f}')
                 self.state_initialized = True
@@ -110,8 +116,8 @@ class CartPoleLQRController(Node):
             
             # Log control input periodically
             if abs(force - self.last_control) > 0.1 or self.control_count % 100 == 0:
-                self.get_logger().info(f'State: {self.x.T}, Control force: {force:.3f}N')
-            
+                self.get_logger().info(f'State: {self.x.T}, Control force: {force:.3f}N max_angle_deviation:{self.max_angle:.2f} max_pos_dev: {self.max_dev:2f}m')
+                  
             # Publish control command
             msg = Float64()
             msg.data = force
@@ -122,7 +128,7 @@ class CartPoleLQRController(Node):
             
         except Exception as e:
             self.get_logger().error(f'Control loop error: {e}')
-
+   
 def main(args=None):
     rclpy.init(args=args)
     controller = CartPoleLQRController()
