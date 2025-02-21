@@ -53,7 +53,8 @@ the run was setup to see if as time went on the system deviations would increase
 this particular run was setup to test that by allowing the actuator effort to be allowed to produce any force to keep it balanced allowed better balancing with the maximum angle deviation = 0.05 and maximum position deviation = 0.08.
 
 
-Conclusion:
+### Conclusion:
+
 the LQR controller is highly dependant on the actuator effort cost function as setting a value low enough allows higher control. but this particular value is affected by the actual ability of the physical actuator itself meaning a suitable value for the actuator effort must be found through physical means. the cost functions for the different states are best to be studied through the actual requirement of the system as the control is somewhat intuitive.
 
 
